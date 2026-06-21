@@ -37,13 +37,13 @@ jobs:
                   key: ${{secrets.PRIVATE_KEY}}
                   script: |
                       # Stop and remove the old container if it exists
-                      docker rm -f chaicode-node || true
+                      sudo docker rm -f chaicode-node || true
                       # Pull the latest Docker image
-                      docker pull craftwithsujeet/chaicode-node
+                      sudo docker pull craftwithsujeet/chaicode-node
 
                       # Run the new Docker container
-                      docker run -d --name chaicode-node --restart unless-stopped -p 8000:8000 craftwithsujeet/chaicode-node
+                      sudo docker run -d --name chaicode-node --restart unless-stopped -p 8000:8000 craftwithsujeet/chaicode-node
 
                       # cleanup old/unused images
-                      docker image prune -f
+                      sudo docker image prune -f
 
