@@ -1,4 +1,4 @@
-name: Deploy Nodejs Code on ExCloud
+name: Deploy Nodejs code on ExCloud
 
 on:
   push:
@@ -18,10 +18,11 @@ jobs:
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: QEMU
         uses: docker/setup-qemu-action@v4
 
-      - name: Set up Docker Buildx
+      - name: set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
       - name: Docker Build and Push
@@ -32,9 +33,9 @@ jobs:
       - name: Deploy on ExCloud
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: 210.79.129.216
+          host: 210.79.128.168
           username: ubuntu
-          key: ${{secrets.PRIVATE_KEY}}
+          key: ${{ secrets.PRIVATE_KEY }}
           script: |
             # CD /home/ubuntu/chaicode-node
             cd /home/ubuntu/chaicode-node
@@ -42,7 +43,7 @@ jobs:
             # git pull
             git pull origin main
 
-            # make sure to pull a fresh copy of craftwithsujeet/chaicode-node
+            # make sure to pull a fresh copy of piyushgargdev/chaicode-node
             sudo docker compose pull
 
             # docker compose up -d
