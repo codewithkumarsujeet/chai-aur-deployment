@@ -1,49 +1,48 @@
 name: Deploy Nodejs Code on ExCloud
 
 on:
-    push:
-        branches:
-            - main
+  push:
+    branches:
+      - main
 
 jobs:
-    deploy:
-        runs-on: ubuntu-latest
+  deploy:
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout Code
-              uses: actions/checkout@v4
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-            - name: Login to Docker Hub
-              uses: docker/login-action@v4
-              with:
-                  username: ${{ vars.DOCKERHUB_USERNAME }}
-                  password: ${{ secrets.DOCKERHUB_TOKEN }}
-            - name: QEMU
-              uses: docker/setup-qemu-action@v4
+      - name: Login to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: QEMU
+        uses: docker/setup-qemu-action@v4
 
-            - name: Set up Docker Buildx
-              uses: docker/setup-buildx-action@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
 
-            - name: Docker Build and Push
-              run: |
-                  docker build -t craftwithsujeet/chaicode-node .
-                  docker push craftwithsujeet/chaicode-node
+      - name: Docker Build and Push
+        run: |
+          docker build -t craftwithsujeet/chaicode-node .
+          docker push craftwithsujeet/chaicode-node
 
-            - name: Deploy on ExCloud
-              uses: appleboy/ssh-action@v1.0.3
-              with:
-                  host: 210.79.129.216
-                  username: ubuntu
-                  key: ${{secrets.PRIVATE_KEY}}
-                  script: |
-                      # Stop and remove the old container if it exists
-                      sudo docker rm -f chaicode-node || true
-                      # Pull the latest Docker image
-                      sudo docker pull craftwithsujeet/chaicode-node
+      - name: Deploy on ExCloud
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 210.79.129.216
+          username: ubuntu
+          key: ${{secrets.PRIVATE_KEY}}
+          script: |
+            # Stop and remove the old container if it exists
+            sudo docker rm -f chaicode-node || true
+            # Pull the latest Docker image
+            sudo docker pull craftwithsujeet/chaicode-node
 
-                      # Run the new Docker container
-                      sudo docker run -d --name chaicode-node --restart unless-stopped -p 8000:8000 craftwithsujeet/chaicode-node
+            # Run the new Docker container
+            sudo docker run -d --name chaicode-node --restart unless-stopped -p 80:8000 craftwithsujeet/chaicode-node
 
-                      # cleanup old/unused images
-                      sudo docker image prune -f
-
+            # cleanup old/unused images
+            sudo docker image prune -f
