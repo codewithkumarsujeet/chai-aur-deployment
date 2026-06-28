@@ -36,13 +36,17 @@ jobs:
           username: ubuntu
           key: ${{secrets.PRIVATE_KEY}}
           script: |
-            # Stop and remove the old container if it exists
-            sudo docker rm -f chaicode-node || true
-            # Pull the latest Docker image
-            sudo docker pull craftwithsujeet/chaicode-node
+            # CD /home/ubuntu/chaicode-node
+            cd /home/ubuntu/chaicode-node
 
-            # Run the new Docker container
-            sudo docker run -d --name chaicode-node --restart unless-stopped -p 80:8000 craftwithsujeet/chaicode-node
+            # git pull
+            git pull origin main
 
-            # cleanup old/unused images
+            # make sure to pull a fresh copy of craftwithsujeet/chaicode-node
+            sudo docker compose pull
+
+            # docker compose up -d
+            sudo docker compose up -d
+
+            # Clean up old/unused images
             sudo docker image prune -f
