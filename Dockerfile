@@ -1,9 +1,11 @@
 FROM node:24-alpine
 
-COPY package.json package.json
-COPY pnpm-lock.yaml pnpm-lock.yaml
-COPY index.js index.js
+WORKDIR /app
 
-RUN pnpm install
+COPY package.json pnpm-lock.yaml ./
 
-CMD ["node", "index"]
+RUN corepack enable && pnpm install
+
+COPY . .
+
+CMD ["node", "index.js"]
